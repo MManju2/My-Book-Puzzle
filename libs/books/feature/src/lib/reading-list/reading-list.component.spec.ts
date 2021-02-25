@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedTestingModule, createReadingListItem } from '@tmo/shared/testing';
 
 import { ReadingListComponent } from './reading-list.component';
@@ -13,7 +14,7 @@ describe('ReadingListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [BooksFeatureModule, SharedTestingModule]
+      imports: [BooksFeatureModule, NoopAnimationsModule,SharedTestingModule]
     }).compileComponents();
   }));
 
@@ -32,6 +33,6 @@ describe('ReadingListComponent', () => {
     jest.spyOn(store, 'dispatch');
     const item = createReadingListItem('A');
     component.removeFromReadingList(item);
-    expect(store.dispatch).toHaveBeenCalledWith(removeFromReadingList({ item }));
+    expect(store.dispatch).toHaveBeenCalledWith(removeFromReadingList({ item, showSnackBar: true }));
   });
 });

@@ -38,7 +38,7 @@ describe('ProductsListComponent', () => {
     jest.spyOn(store, 'dispatch');
     const book = createBook('A');
     component.addBookToReadingList(book);
-    expect(store.dispatch).toHaveBeenCalledWith(addToReadingList({ book }));
+    expect(store.dispatch).toHaveBeenCalledWith(addToReadingList({ book, showSnackBar: true }));
   });
 
   it('should set search term and call searchbooks when default link clicked', () => {

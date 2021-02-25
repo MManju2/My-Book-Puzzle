@@ -34,7 +34,7 @@ describe('Books Reducer', () => {
 
     it('should add book to the state when addToReadingList action dispatched', () => {
       const action = ReadingListActions.addToReadingList({
-        book: createBook('C')
+        book: createBook('C'), showSnackBar: false
       });
 
       const result: State = reducer(state, action);
@@ -54,7 +54,7 @@ describe('Books Reducer', () => {
 
     it('should remove book from state when removeFromReadingList action dispatched', () => {
       const action = ReadingListActions.removeFromReadingList({
-        item: createReadingListItem('A')
+        item: createReadingListItem('A'), showSnackBar: false
       });
 
       const result: State = reducer(state, action);

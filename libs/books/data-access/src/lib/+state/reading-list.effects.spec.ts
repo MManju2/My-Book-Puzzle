@@ -1,12 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, EMPTY } from 'rxjs';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
 
-import { SharedTestingModule } from '@tmo/shared/testing';
+import { SharedTestingModule, createBook, createReadingListItem } from '@tmo/shared/testing';
 import { ReadingListEffects } from './reading-list.effects';
 import * as ReadingListActions from './reading-list.actions';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ToReadEffects', () => {
   let actions: ReplaySubject<any>;
@@ -15,7 +17,7 @@ describe('ToReadEffects', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedTestingModule],
+      imports: [SharedTestingModule, MatSnackBarModule, NoopAnimationsModule],
       providers: [
         ReadingListEffects,
         provideMockActions(() => actions),
@@ -40,6 +42,58 @@ describe('ToReadEffects', () => {
       });
 
       httpMock.expectOne('/api/reading-list').flush([]);
+    });
+  });
+
+  describe('addBook$', () => {
+    it('should invoke EMPTY action when addToReadingList action succeeds', () => {
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.addToReadingList({
+        book: createBook('A'), showSnackBar: false
+      }));
+
+      effects.addBook$.subscribe(action => {
+        expect(action).toEqual(EMPTY);
+      });
+
+      httpMock.expectOne('/api/reading-list').flush([]);
+    });
+
+    it("shoul call openSnackBar function when showSnackBar is true", () => {
+      jest.spyOn(effects, 'openSnackBar');
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.addToReadingList({
+        book: createBook('A'), showSnackBar: true
+      }));
+
+      effects.addBook$.subscribe();
+      expect(effects.openSnackBar).toHaveBeenCalledWith('Added !')
+    });
+  });
+
+  describe('removeBook$', () => {
+    it('should invoke EMPTY action when removeFromReadingList action succeeds', () => {
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.removeFromReadingList({
+        item: createReadingListItem('A'), showSnackBar: false
+      }));
+
+      effects.removeBook$.subscribe(action => {
+        expect(action).toEqual(EMPTY);
+      });
+
+      httpMock.expectOne('/api/reading-list/A').flush([]);
+    });
+
+    it("shoul call openSnackBar function when showSnackBar is true", () => {
+      jest.spyOn(effects, 'openSnackBar');
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.removeFromReadingList({
+        item: createReadingListItem('A'), showSnackBar: true
+      }));
+
+      effects.removeBook$.subscribe();
+      expect(effects.openSnackBar).toHaveBeenCalledWith('Removed !');
     });
   });
 });
