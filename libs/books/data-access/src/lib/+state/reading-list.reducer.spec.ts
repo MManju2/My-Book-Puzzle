@@ -32,7 +32,17 @@ describe('Books Reducer', () => {
       expect(result.ids.length).toEqual(3);
     });
 
-    it('failedAddToReadingList should undo book addition to the state', () => {
+    it('should add book to the state when addToReadingList action dispatched', () => {
+      const action = ReadingListActions.addToReadingList({
+        book: createBook('C')
+      });
+
+      const result: State = reducer(state, action);
+
+      expect(result.ids).toEqual(["A", "B", "C"]);
+    });
+
+    it('should remove book from state when failedAddToReadingList action dispatched', () => {
       const action = ReadingListActions.failedAddToReadingList({
         book: createBook('B')
       });
@@ -42,7 +52,17 @@ describe('Books Reducer', () => {
       expect(result.ids).toEqual(['A']);
     });
 
-    it('failedRemoveFromReadingList should undo book removal from the state', () => {
+    it('should remove book from state when removeFromReadingList action dispatched', () => {
+      const action = ReadingListActions.removeFromReadingList({
+        item: createReadingListItem('A')
+      });
+
+      const result: State = reducer(state, action);
+
+      expect(result.ids).toEqual(["B"]);
+    });
+
+    it('should add book to the state when failedRemoveFromReadingList action dispatched', () => {
       const action = ReadingListActions.failedRemoveFromReadingList({
         item: createReadingListItem('C')
       });

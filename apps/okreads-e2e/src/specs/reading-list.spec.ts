@@ -7,7 +7,7 @@ describe('When: I use the reading list feature', () => {
       ExpectedConditions.textToBePresentInElement($('tmo-root'), 'okreads')
     );
 
-    const readingListToggle = await $('[data-testing="toggle-reading-list"]');
+    const readingListToggle = $('[data-testing="toggle-reading-list"]');
     await readingListToggle.click();
 
     await browser.wait(
