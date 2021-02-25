@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedTestingModule, createBook } from '@tmo/shared/testing';
 
@@ -33,6 +33,24 @@ describe('ProductsListComponent', () => {
   it('should create', () => {
     expect(component).toBeDefined();
   });
+
+  it('should not call searchBooks function before 500ms even user typed something', fakeAsync(() => {
+    jest.spyOn(component, 'searchBooks');
+    component.searchForm.patchValue({ term: 'java'});
+    component.ngOnInit();
+    tick(400);
+    expect(component.searchBooks).not.toHaveBeenCalled();
+    fixture.destroy();
+  }))
+
+  it('should call searchBooks function when 500ms completed', fakeAsync(() => {
+    jest.spyOn(component, 'searchBooks');
+    component.searchForm.patchValue({ term: 'salesforce admin' });
+    component.ngOnInit();
+    tick(500);
+    expect(component.searchBooks).toHaveBeenCalledTimes(1);
+    fixture.destroy()
+  }));
 
   it('should dispatch addToReadingList action when addBookToReadingList function called', () => {
     jest.spyOn(store, 'dispatch');

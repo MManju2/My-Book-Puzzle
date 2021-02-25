@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   addToReadingList,
@@ -9,20 +9,35 @@ import {
   BooksPartialState
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { Book, DefaultTerm } from '@tmo/shared/models';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'tmo-book-search',
   templateUrl: './book-search.component.html',
   styleUrls: ['./book-search.component.scss']
 })
-export class BookSearchComponent {
+export class BookSearchComponent implements OnInit, OnDestroy{
   readingListBook$ = this.store.select(getAllBooks);
   bookFetchError$ = this.store.select(getBooksError);
+  private destroyed$: Subject<boolean> = new Subject();
 
   searchForm = this.fb.group({
     term: ''
   });
+
+  ngOnInit(): void {
+    this.searchForm.get('term').valueChanges
+      .pipe(
+        takeUntil(this.destroyed$),
+        debounceTime(500),
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        this.searchBooks();
+      });
+  }
 
   constructor(
     private readonly store: Store<BooksPartialState>,
@@ -53,5 +68,10 @@ export class BookSearchComponent {
   clearBooks() {
     !this.searchForm.value.term &&
       this.store.dispatch(clearSearch());
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 }
