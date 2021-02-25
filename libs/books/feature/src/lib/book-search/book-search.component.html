@@ -6,34 +6,43 @@
       type="search"
       placeholder="Search for books to add to your reading list"
       formControlName="term"
+      aria-label="search input"
+      (keyup)="clearBooks()"
     />
-    <button mat-icon-button matSuffix>
+    <button mat-icon-button matSuffix [attr.aria-label]="'Search Icon'">
       <mat-icon>search</mat-icon>
     </button>
   </mat-form-field>
 </form>
 
 <ng-container *ngIf="searchTerm; else empty">
+  <ng-container *ngIf="bookFetchError$ | async; else showBooks">
+    <div class="empty">
+      No books found. Try searching for other books.
+    </div>
+  </ng-container>
+  <ng-template #showBooks>
   <div class="book-grid">
-    <div class="book" data-testing="book-item" *ngFor="let b of books">
-      <div class="book--title">
+    <div class="book" data-testing="book-item" *ngFor="let b of readingListBook$ | async">
+      <h4>
         {{ b.title }}
-      </div>
+      </h4>
       <div class="book--content">
         <div class="book--content--cover">
-          <img src="{{ b.coverUrl }}" />
+          <img src="{{ b.coverUrl }}" alt="Book Cover Page" />
         </div>
         <div class="book--content--info">
           <div><strong>Author:</strong> {{ b.authors.join(',') }}</div>
           <div><strong>Publisher:</strong> {{ b.publisher }}</div>
           <div>
-            <strong>Published:</strong> {{ formatDate(b.publishedDate) }}
+            <strong>Published:</strong> {{ b.publishedDate | date: 'M/d/yyyy' }}
           </div>
           <p [innerHTML]="b.description"></p>
           <div>
             <button
               mat-flat-button
               color="primary"
+              [attr.aria-label]="'Add button'"
               (click)="addBookToReadingList(b)"
               [disabled]="b.isAdded"
             >
@@ -44,13 +53,18 @@
       </div>
     </div>
   </div>
+  </ng-template>
 </ng-container>
 <ng-template #empty>
   <div class="empty">
     <p>
-      Try searching for a topic, for example "<a (click)="searchExample()"
-        >JavaScript</a
-      >".
+      Try searching for a topic, for example "<span
+      data-e2e="default-term-link"
+      tabindex = "0"
+      role="button"
+      (click)="searchExample()"
+      (keydown.enter)="searchExample()"
+      >JavaScript</span>".
     </p>
   </div>
 </ng-template>

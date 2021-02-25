@@ -22,10 +22,11 @@ form {
   background-color: $gray10;
 }
 
-.book--title {
+h4 {
   font-weight: 500;
   color: $gray80;
   margin-bottom: $spacing-xs;
+  margin-block-start: $spacing-3xs;
 }
 
 .book--content {
@@ -69,4 +70,13 @@ form {
   min-height: 50vh;
   font-size: 1.5rem;
   color: $gray40;
+}
+
+.empty span {
+  cursor: pointer;
+  color: $pink-accent;
+
+  &:hover {
+    color: $pink-dark;
+  }
 }
