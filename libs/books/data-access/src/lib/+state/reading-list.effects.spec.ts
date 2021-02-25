@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, EMPTY } from 'rxjs';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
 
-import { SharedTestingModule } from '@tmo/shared/testing';
+import { SharedTestingModule, createReadingListItem } from '@tmo/shared/testing';
 import { ReadingListEffects } from './reading-list.effects';
 import * as ReadingListActions from './reading-list.actions';
 
@@ -40,6 +40,42 @@ describe('ToReadEffects', () => {
       });
 
       httpMock.expectOne('/api/reading-list').flush([]);
+    });
+  });
+
+  describe('finishBook$', () => {
+    it('should invoke EMPTY action when finishFromReadingList action succeeds', () => {
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.finishFromReadingList({
+        item: createReadingListItem('A'), finishedDate: new Date().toISOString()
+      }));
+
+      effects.finishBook$.subscribe(action => {
+        expect(action).toEqual(EMPTY);
+      });
+
+      httpMock.expectOne('/api/reading-list/A/finished').flush([]);
+    });
+
+    it('should invoke failedFinishedFromReadingList action when http call fails', done => {
+      const item = createReadingListItem('A');
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.finishFromReadingList({
+        item, finishedDate: new Date().toISOString()
+      }))
+
+      effects.finishBook$.subscribe(action => {
+        expect(action).toEqual(
+          ReadingListActions.failedFinishedFromReadingList({
+            item, finishedDate: ''
+          })
+        );
+        done();
+      });
+
+      httpMock.expectOne('/api/reading-list/A/finished').error(
+        new ErrorEvent('Throw Error')
+      );
     });
   });
 });

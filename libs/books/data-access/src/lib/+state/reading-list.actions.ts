@@ -31,3 +31,13 @@ export const failedRemoveFromReadingList = createAction(
   '[Reading List API] Failed remove from list',
   props<{ item: ReadingListItem }>()
 );
+
+export const finishFromReadingList = createAction(
+  '[Reading List] finish book from list',
+  props<{item: ReadingListItem, finishedDate: string}>()
+);
+
+export const failedFinishedFromReadingList = createAction(
+  '[Reading List] failed Finsihed from list',
+  props<{item: ReadingListItem, finishedDate: string}>()
+);

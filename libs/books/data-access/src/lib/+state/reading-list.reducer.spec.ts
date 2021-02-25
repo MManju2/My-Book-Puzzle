@@ -71,6 +71,26 @@ describe('Books Reducer', () => {
 
       expect(result.ids).toEqual(['A', 'B', 'C']);
     });
+
+    it('should set the finished state as true when finishFromReadingList action dispatched', () => {
+      const action = ReadingListActions.finishFromReadingList({
+        item: createReadingListItem('A'), finishedDate: new Date().toISOString()
+      });
+
+      const result: State = reducer(state, action);
+
+      expect(result.entities.A.finished).toBe(true);
+    });
+
+    it('should set the finished state as false when failedFinishedFromReadingList action dispatched', () => {
+      const action = ReadingListActions.failedFinishedFromReadingList({
+        item: createReadingListItem('A'), finishedDate: ''
+      });
+
+      const result: State = reducer(state, action);
+
+      expect(result.entities.A.finished).toBe(false);
+    });
   });
 
   describe('unknown action', () => {

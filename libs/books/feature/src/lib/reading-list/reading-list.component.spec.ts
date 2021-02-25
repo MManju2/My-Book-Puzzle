@@ -4,7 +4,7 @@ import { SharedTestingModule, createReadingListItem } from '@tmo/shared/testing'
 import { ReadingListComponent } from './reading-list.component';
 import { BooksFeatureModule } from '@tmo/books/feature';
 import { Store } from '@ngrx/store';
-import { removeFromReadingList, ReadingListPartialState } from '@tmo/books/data-access';
+import { removeFromReadingList, ReadingListPartialState, finishFromReadingList } from '@tmo/books/data-access';
 
 describe('ReadingListComponent', () => {
   let component: ReadingListComponent;
@@ -33,5 +33,15 @@ describe('ReadingListComponent', () => {
     const item = createReadingListItem('A');
     component.removeFromReadingList(item);
     expect(store.dispatch).toHaveBeenCalledWith(removeFromReadingList({ item }));
+  });
+
+  it('should dispatch an action when finishBookFromReadingList function called', () => {
+    jest.spyOn(store, 'dispatch');
+    const item = createReadingListItem('B');
+    const finishedDate = new Date().toISOString();
+    component.finishBookFromReadingList(item);
+    expect(store.dispatch).toHaveBeenCalledWith(
+      finishFromReadingList({ item, finishedDate })
+    );
   });
 });

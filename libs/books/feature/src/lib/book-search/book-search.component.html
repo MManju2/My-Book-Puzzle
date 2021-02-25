@@ -38,7 +38,7 @@
             <strong>Published:</strong> {{ b.publishedDate | date: 'M/d/yyyy' }}
           </div>
           <p [innerHTML]="b.description"></p>
-          <div>
+          <div  *ngIf="!b.finished">
             <button
               mat-flat-button
               color="primary"
@@ -47,6 +47,11 @@
               [disabled]="b.isAdded"
             >
               Want to Read
+            </button>
+          </div>
+          <div *ngIf="b.finished">
+            <button mat-raised-button color="primary" disabled>
+              <span>Finished</span>
             </button>
           </div>
         </div>
