@@ -9,34 +9,33 @@ import {
   BooksPartialState
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Book, DefaultTerm } from '@tmo/shared/models';
-import { Subject } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'tmo-book-search',
   templateUrl: './book-search.component.html',
   styleUrls: ['./book-search.component.scss']
 })
-export class BookSearchComponent implements OnInit, OnDestroy{
+export class BookSearchComponent implements OnInit, OnDestroy {
   readingListBook$ = this.store.select(getAllBooks);
   bookFetchError$ = this.store.select(getBooksError);
-  private destroyed$: Subject<boolean> = new Subject();
+  private subscription: Subscription = new Subscription();
 
   searchForm = this.fb.group({
     term: ''
   });
 
   ngOnInit(): void {
-    this.searchForm.get('term').valueChanges
-      .pipe(
-        takeUntil(this.destroyed$),
-        debounceTime(500),
-        distinctUntilChanged()
-      )
-      .subscribe(() => {
-        this.searchBooks();
-      });
+    this.subscription.add(
+      this.searchForm
+        .get('term')
+        .valueChanges.pipe(debounceTime(500), distinctUntilChanged())
+        .subscribe(() => {
+          this.searchBooks();
+        })
+    );
   }
 
   constructor(
@@ -71,7 +70,6 @@ export class BookSearchComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy() {
-    this.destroyed$.next(true);
-    this.destroyed$.complete();
+    this.subscription.unsubscribe();
   }
 }

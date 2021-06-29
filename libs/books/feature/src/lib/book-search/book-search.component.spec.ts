@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedTestingModule, createBook } from '@tmo/shared/testing';
-
+import { By } from '@angular/platform-browser';
 import { BooksFeatureModule } from '../books-feature.module';
 import { BookSearchComponent } from './book-search.component';
 import { Store } from '@ngrx/store';
@@ -36,20 +36,43 @@ describe('ProductsListComponent', () => {
 
   it('should not call searchBooks function before 500ms even user typed something', fakeAsync(() => {
     jest.spyOn(component, 'searchBooks');
-    component.searchForm.patchValue({ term: 'java'});
-    component.ngOnInit();
+    const inputElement: HTMLInputElement = fixture.debugElement.query(
+      By.css('[data-e2e="input-field"]')
+    ).nativeElement;
+    inputElement.value = 'java';
+    inputElement.dispatchEvent(new Event('input'));
     tick(400);
+
     expect(component.searchBooks).not.toHaveBeenCalled();
     fixture.destroy();
-  }))
+  }));
 
-  it('should call searchBooks function when 500ms completed', fakeAsync(() => {
-    jest.spyOn(component, 'searchBooks');
-    component.searchForm.patchValue({ term: 'salesforce admin' });
-    component.ngOnInit();
+  it('should dispatch searchBooks action when the input field of the form has some text after 500ms', fakeAsync(() => {
+    jest.spyOn(store, 'dispatch');
+    const inputElement: HTMLInputElement = fixture.debugElement.query(
+      By.css('[data-e2e="input-field"]')
+    ).nativeElement;
+    inputElement.value = 'salesforce admin';
+    inputElement.dispatchEvent(new Event('input'));
     tick(500);
-    expect(component.searchBooks).toHaveBeenCalledTimes(1);
-    fixture.destroy()
+
+    expect(store.dispatch).toHaveBeenCalledWith(
+      searchBooks({ term: 'salesforce admin' })
+    );
+    fixture.destroy();
+  }));
+
+  it('should dispatch clearSearch action when the input field of the form is empty', fakeAsync(() => {
+    jest.spyOn(store, 'dispatch');
+    const inputElement: HTMLInputElement = fixture.debugElement.query(
+      By.css('[data-e2e="input-field"]')
+    ).nativeElement;
+    inputElement.value = '';
+    inputElement.dispatchEvent(new Event('input'));
+    tick(500);
+
+    expect(store.dispatch).toHaveBeenCalledWith(clearSearch());
+    fixture.destroy();
   }));
 
   it('should dispatch addToReadingList action when addBookToReadingList function called', () => {
