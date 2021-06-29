@@ -42,6 +42,7 @@
             <button
               mat-flat-button
               color="primary"
+              data-e2e="add-button"
               [attr.aria-label]="'Add button'"
               (click)="addBookToReadingList(b)"
               [disabled]="b.isAdded"
