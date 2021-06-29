@@ -34,10 +34,15 @@ export const failedRemoveFromReadingList = createAction(
 
 export const finishFromReadingList = createAction(
   '[Reading List] finish book from list',
-  props<{item: ReadingListItem, finishedDate: string}>()
+  props<{ item: ReadingListItem; finishedDate: string }>()
+);
+
+export const finishFromReadingListSuccess = createAction(
+  '[Reading List] Success finish book from list',
+  props<{ item: ReadingListItem; finishedDate: string }>()
 );
 
 export const failedFinishedFromReadingList = createAction(
   '[Reading List] failed Finsihed from list',
-  props<{item: ReadingListItem, finishedDate: string}>()
+  props<{ error: string }>()
 );

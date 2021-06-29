@@ -27,6 +27,7 @@
       <button
         data-testing = "finishBookButton"
         mat-icon-button
+        data-e2e="finish-icon"
         (click)="finishBookFromReadingList(b)"
         [disabled]= "b.finished"
       ><mat-icon [ngStyle]="b.finished ? {'color':'green'}: ''">check_circle_outline</mat-icon>

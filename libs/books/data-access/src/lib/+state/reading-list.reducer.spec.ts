@@ -72,8 +72,8 @@ describe('Books Reducer', () => {
       expect(result.ids).toEqual(['A', 'B', 'C']);
     });
 
-    it('should set the finished state as true when finishFromReadingList action dispatched', () => {
-      const action = ReadingListActions.finishFromReadingList({
+    it('should set the finished state as true when finishFromReadingListSuccess action dispatched', () => {
+      const action = ReadingListActions.finishFromReadingListSuccess({
         item: createReadingListItem('A'), finishedDate: new Date().toISOString()
       });
 
@@ -82,14 +82,14 @@ describe('Books Reducer', () => {
       expect(result.entities.A.finished).toBe(true);
     });
 
-    it('should set the finished state as false when failedFinishedFromReadingList action dispatched', () => {
+    it('should set the error in state when failedFinishedFromReadingList action dispatched', () => {
       const action = ReadingListActions.failedFinishedFromReadingList({
-        item: createReadingListItem('A'), finishedDate: ''
+        error: 'Error'
       });
 
       const result: State = reducer(state, action);
 
-      expect(result.entities.A.finished).toBe(false);
+      expect(result.error).toBe('Error');
     });
   });
 

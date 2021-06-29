@@ -5,6 +5,7 @@ import { ReadingListComponent } from './reading-list.component';
 import { BooksFeatureModule } from '@tmo/books/feature';
 import { Store } from '@ngrx/store';
 import { removeFromReadingList, ReadingListPartialState, finishFromReadingList } from '@tmo/books/data-access';
+import { of } from 'rxjs';
 
 describe('ReadingListComponent', () => {
   let component: ReadingListComponent;
@@ -35,11 +36,18 @@ describe('ReadingListComponent', () => {
     expect(store.dispatch).toHaveBeenCalledWith(removeFromReadingList({ item }));
   });
 
-  it('should dispatch an action when finishBookFromReadingList function called', () => {
+  it('should dispatch finishBookFromReadingList action when user clicked on finish icon', () => {
+    const item = createReadingListItem('A');
+    const itemArray = [item, createReadingListItem('B')];
+    const finishedDate = expect.anything();
     jest.spyOn(store, 'dispatch');
-    const item = createReadingListItem('B');
-    const finishedDate = new Date().toISOString();
-    component.finishBookFromReadingList(item);
+    component.readingList$ = of(itemArray);
+    fixture.detectChanges();
+    const finishIcon = fixture.nativeElement.querySelectorAll(
+      '[data-e2e="finish-icon"]'
+    );
+    finishIcon[0].click();
+
     expect(store.dispatch).toHaveBeenCalledWith(
       finishFromReadingList({ item, finishedDate })
     );
