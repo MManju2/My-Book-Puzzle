@@ -11,6 +11,7 @@ import {
   addToReadingList,
   searchBooks
 } from '@tmo/books/data-access';
+import { of } from 'rxjs';
 
 describe('ProductsListComponent', () => {
   let component: BookSearchComponent;
@@ -34,10 +35,20 @@ describe('ProductsListComponent', () => {
     expect(component).toBeDefined();
   });
 
-  it('should dispatch addToReadingList action when addBookToReadingList function called', () => {
+  it('should dispatch addToReadingList action when user clicked on want to read button', () => {
+    const book = { ...createBook('A'), isAdded: false };
+    const booksArray = [
+      book, { ...createBook('B'), isAdded: true }
+    ];
     jest.spyOn(store, 'dispatch');
-    const book = createBook('A');
-    component.addBookToReadingList(book);
+    component.readingListBook$ = of(booksArray);
+    component.searchForm.value.term = 'css';
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelectorAll(
+      '[data-e2e="add-button"]'
+    );
+    button[0].click();
+
     expect(store.dispatch).toHaveBeenCalledWith(addToReadingList({ book, showSnackBar: true }));
   });
 
